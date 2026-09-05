@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from backend.ai_orchestrator import AIOrchestrator
+from backend.db import IS_POSTGRES
 from backend.forecasting_tool import ForecastingTool
 from backend.query_tool import QueryTool
 
@@ -58,10 +59,15 @@ def get_kpis(
 @app.get("/api/charts/order-volume")
 def get_order_volume():
     try:
+        month_expr = (
+            "to_char(order_date::date, 'YYYY-MM')"
+            if IS_POSTGRES
+            else "strftime('%Y-%m', order_date)"
+        )
         data = query_tool.execute_analytical_query(
-            select_clause="strftime('%Y-%m', order_date) as month, COUNT(*) as total_orders, SUM(CASE WHEN status='delivered' THEN 1 ELSE 0 END) as delivered, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed",
-            group_by="month",
-            order_by="month ASC",
+            select_clause=f"{month_expr} as month, COUNT(*) as total_orders, SUM(CASE WHEN status='delivered' THEN 1 ELSE 0 END) as delivered, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed",
+            group_by="1",
+            order_by="1 ASC",
         )
         return {"chart_data": data}
     except Exception as e:

@@ -25,6 +25,30 @@ A full-stack AI-powered logistics analytics application featuring descriptive KP
 
 ---
 
+## 🟢 Setting up Nvidia API (NVIDIA NIM) in Backend
+
+The backend AI Orchestrator (`backend/ai_orchestrator.py`) supports **NVIDIA API** (NVIDIA NIM / OpenAI-compatible API) endpoints out-of-the-box.
+
+### Environment Variable Setup
+
+To enable Nvidia API, export your Nvidia API key before starting the FastAPI server:
+
+```bash
+export NVIDIA_API_KEY="nvapi-your-nvidia-api-key-here"
+export NVIDIA_BASE_URL="https://integrate.api.nvidia.com/v1"            # Default endpoint
+export NVIDIA_MODEL="meta/llama-3.1-8b-instruct"                          # Or "nvidia/llama-3.1-nemotron-70b-instruct"
+```
+
+### Supported Models
+- `meta/llama-3.1-8b-instruct`
+- `meta/llama-3.1-70b-instruct`
+- `nvidia/llama-3.1-nemotron-70b-instruct`
+- `mistralai/mixtral-8x7b-instruct-v0.1`
+
+When `NVIDIA_API_KEY` is present, the explainability audit metadata automatically tags `llm_provider: "Nvidia API"` in computation trace logs.
+
+---
+
 ## 🛠️ Data Handling & Database Schema
 
 The platform uses a unified dataset (`mock_logistics_data.csv` - 400 order records) synced with a relational database (supports **Supabase PostgreSQL** and **SQLite**).
@@ -106,8 +130,9 @@ Follow these step-by-step instructions to deploy the production dataset to **Sup
 ### Step 2: Backend API Deployment (Render / AWS / Railway / Vercel Serverless)
 
 1. Deploy the Python FastAPI backend to your cloud host (e.g. Render, Railway, or AWS EC2).
-2. Configure the Cloud Environment Variable:
+2. Configure Cloud Environment Variables:
    - `DATABASE_URL`: Your Supabase connection string.
+   - `NVIDIA_API_KEY`: Your Nvidia API key.
 3. Verify backend health endpoint once deployed: `https://your-backend-api.onrender.com/api/health`
 
 ---
@@ -176,5 +201,5 @@ python -m pytest tests/test_api.py tests/test_tools.py
 ## 🔮 Future Improvements
 
 1. **Advanced ML Forecasting**: Integrate Prophet or ARIMA models for seasonal decomposition.
-2. **LLM Function Calling**: Upgrade AI orchestrator to use OpenAI / Anthropic tool use APIs for multi-step reasoning.
+2. **LLM Function Calling**: Upgrade AI orchestrator to use OpenAI / Anthropic / Nvidia tool use APIs for multi-step reasoning.
 3. **Real-time Streaming**: Implement WebSockets for live order status updates and alert notifications.
