@@ -309,7 +309,7 @@ Respond with ONLY a JSON object in the following format:
         if "carrier" in q_lower and (
             "highest" in q_lower or "delay" in q_lower or "worst" in q_lower
         ):
-            select = "carrier, COUNT(*) as total_orders, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed_orders, ROUND(CAST(SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100, 2) as delay_rate_pct"
+            select = "carrier, COUNT(*) as total_orders, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed_orders, ROUND(CAST(SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) AS NUMERIC) / COUNT(*) * 100, 2) as delay_rate_pct"
             group_by = "carrier"
             order_by = "delay_rate_pct DESC"
             data = self.query_tool.execute_analytical_query(

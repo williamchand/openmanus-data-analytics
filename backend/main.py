@@ -91,7 +91,7 @@ def get_delivery_performance():
 def get_carrier_breakdown():
     try:
         data = query_tool.execute_analytical_query(
-            select_clause="carrier, COUNT(*) as total_orders, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed_orders, ROUND(CAST(SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) AS FLOAT) / COUNT(*) * 100, 1) as delay_rate_pct",
+            select_clause="carrier, COUNT(*) as total_orders, SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) as delayed_orders, ROUND(CAST(SUM(CASE WHEN status='delayed' THEN 1 ELSE 0 END) AS NUMERIC) / COUNT(*) * 100, 1) as delay_rate_pct",
             group_by="carrier",
             order_by="total_orders DESC",
         )

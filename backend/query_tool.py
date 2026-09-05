@@ -27,7 +27,7 @@ class QueryTool:
                 params.append(f"-{time_range_days} days")
 
         if IS_POSTGRES:
-            avg_expr = "AVG(CASE WHEN delivery_date IS NOT NULL AND delivery_date != '' THEN (delivery_date::date - order_date::date) ELSE NULL END)"
+            avg_expr = "AVG(CASE WHEN delivery_date IS NOT NULL AND delivery_date::text != '' THEN (delivery_date::date - order_date::date) ELSE NULL END)"
         else:
             avg_expr = "AVG(CASE WHEN delivery_date IS NOT NULL AND delivery_date != '' THEN julianday(delivery_date) - julianday(order_date) ELSE NULL END)"
 
