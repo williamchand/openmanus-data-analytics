@@ -32,7 +32,6 @@ setup(
         "uv>=0.6.0",
         "googlesearch-python~=1.3.0",
         "aiofiles~=24.1.0",
-        "pydantic_core>=2.27.2,<2.28.0",
         "colorama~=0.4.6",
     ],
     classifiers=[
