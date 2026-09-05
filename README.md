@@ -130,10 +130,15 @@ Follow these step-by-step instructions to deploy the production dataset to **Sup
 ### Step 2: Backend API Deployment (Render / AWS / Railway / Vercel Serverless)
 
 1. Deploy the Python FastAPI backend to your cloud host (e.g. Render, Railway, or AWS EC2).
-2. Configure Cloud Environment Variables:
+2. Ensure Python version compatibility:
+   - The repository includes a `runtime.txt` specifying `python-3.12.9` and a `render.yaml` configuration.
+   - On Render, ensure `PYTHON_VERSION` is set to `3.12.9` (Python 3.12 has pre-built binary wheels for packages like `pydantic-core` and `tiktoken`, preventing `maturin`/cargo source compilation errors on read-only filesystems).
+3. Configure Cloud Environment Variables:
    - `DATABASE_URL`: Your Supabase connection string.
    - `NVIDIA_API_KEY`: Your Nvidia API key.
-3. Verify backend health endpoint once deployed: `https://your-backend-api.onrender.com/api/health`
+   - `PYTHON_VERSION`: `3.12.9`
+   - `CARGO_HOME`: `/tmp/cargo` (optional safeguard for Rust builds)
+4. Verify backend health endpoint once deployed: `https://your-backend-api.onrender.com/api/health`
 
 ---
 
