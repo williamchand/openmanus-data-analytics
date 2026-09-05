@@ -8,9 +8,11 @@ DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("SUPABASE_DATABA
 
 IS_POSTGRES = bool(DATABASE_URL and DATABASE_URL.startswith("postgres"))
 
-if IS_POSTGRES:
+try:
     import psycopg2
     import psycopg2.extras
+except ImportError:
+    psycopg2 = None
 
 SQLITE_DB_PATH = os.path.join(os.path.dirname(__file__), "..", "logistics.db")
 
@@ -42,6 +44,10 @@ def execute_query(query: str, params: Tuple[Any, ...] = ()) -> List[Dict[str, An
                 "julianday(delivery_date) - julianday(order_date)",
                 "EXTRACT(DAY FROM (delivery_date::timestamp - order_date::timestamp))",
             )
+            pg_query = pg_query.replace(
+                "delivery_date != ''", "delivery_date::text != ''"
+            )
+            pg_query = pg_query.replace("AS FLOAT", "AS NUMERIC")
 
             with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
                 cur.execute(pg_query, params)

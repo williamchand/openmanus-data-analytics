@@ -34,6 +34,15 @@ def test_get_order_volume(client):
     assert len(data["chart_data"]) > 0
 
 
+def test_get_carrier_breakdown(client):
+    res = client.get("/api/charts/carrier-breakdown")
+    assert res.status_code == 200
+    data = res.json()
+    assert "chart_data" in data
+    assert len(data["chart_data"]) > 0
+    assert "delay_rate_pct" in data["chart_data"][0]
+
+
 def test_ask_ai_carrier_query(client):
     res = client.post(
         "/api/ask-ai", json={"question": "Which carrier has the highest delay rate?"}
