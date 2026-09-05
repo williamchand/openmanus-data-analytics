@@ -1,10 +1,11 @@
-import sqlite3
 import os
-import math
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+import sqlite3
+from datetime import datetime
+from typing import Any, Dict, Optional
+
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "logistics.db")
+
 
 class ForecastingTool:
     """
@@ -12,6 +13,7 @@ class ForecastingTool:
     Supports Moving Average, Linear Regression, and Exponential Smoothing methods.
     Returns forecast values, visualization structure, inventory recommendations, and methodology explanations.
     """
+
     def __init__(self, db_path: str = DB_PATH):
         self.db_path = db_path
 
@@ -20,7 +22,7 @@ class ForecastingTool:
         sku: Optional[str] = None,
         product_category: Optional[str] = None,
         months_ahead: int = 4,
-        method: str = "exponential_smoothing"
+        method: str = "exponential_smoothing",
     ) -> Dict[str, Any]:
         conn = sqlite3.connect(self.db_path)
         conn.row_factory = sqlite3.Row
@@ -61,11 +63,11 @@ class ForecastingTool:
                 "historical_data": [],
                 "forecast_data": [],
                 "recommendation": "Maintain baseline safety stock based on default operational policy.",
-                "methodology": "No historical data available."
+                "methodology": "No historical data available.",
             }
 
-        historical_months = [r['month'] for r in rows]
-        historical_quantities = [r['total_quantity'] for r in rows]
+        historical_months = [r["month"] for r in rows]
+        historical_quantities = [r["total_quantity"] for r in rows]
 
         historical_series = [
             {"month": m, "quantity": q, "type": "historical"}
@@ -114,7 +116,7 @@ class ForecastingTool:
                 forecast_quantities.append(round(max(0, pred), 1))
             methodology_desc = f"Linear Regression (Ordinary Least Squares) capturing linear growth/decline trend (slope: {b:.2f})."
 
-        else: # Exponential Smoothing
+        else:  # Exponential Smoothing
             alpha = 0.4
             s = historical_quantities[0]
             for val in historical_quantities[1:]:
@@ -132,10 +134,12 @@ class ForecastingTool:
         # Calculate Inventory Recommendation
         total_predicted = sum(forecast_quantities)
         avg_monthly_pred = total_predicted / months_ahead if months_ahead > 0 else 0
-        safety_stock = round(avg_monthly_pred * 0.20, 1) # 20% buffer
+        safety_stock = round(avg_monthly_pred * 0.20, 1)  # 20% buffer
         recommended_inventory = round(total_predicted + safety_stock, 1)
 
-        target_name = sku if sku else (product_category if product_category else "all products")
+        target_name = (
+            sku if sku else (product_category if product_category else "all products")
+        )
 
         recommendation = (
             f"For {target_name}, predicted demand over the next {months_ahead} months is {total_predicted:.1f} units "
@@ -157,7 +161,7 @@ class ForecastingTool:
                 "total_predicted_demand": total_predicted,
                 "avg_monthly_demand": avg_monthly_pred,
                 "safety_stock_buffer": safety_stock,
-                "recommended_procurement_units": recommended_inventory
+                "recommended_procurement_units": recommended_inventory,
             },
-            "recommendation": recommendation
+            "recommendation": recommendation,
         }

@@ -1,8 +1,16 @@
-import os
 import csv
+import os
 import sqlite3
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "examples", "use_case", "logistic_data", "mock_logistics_data.csv")
+
+CSV_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "examples",
+    "use_case",
+    "logistic_data",
+    "mock_logistics_data.csv",
+)
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "logistics.db")
 
 CREATE_TABLE_SQL = """
@@ -32,8 +40,9 @@ CREATE_INDEXES_SQL = [
     "CREATE INDEX IF NOT EXISTS idx_logistics_carrier ON logistics(carrier);",
     "CREATE INDEX IF NOT EXISTS idx_logistics_status ON logistics(status);",
     "CREATE INDEX IF NOT EXISTS idx_logistics_sku ON logistics(sku);",
-    "CREATE INDEX IF NOT EXISTS idx_logistics_region ON logistics(region);"
+    "CREATE INDEX IF NOT EXISTS idx_logistics_region ON logistics(region);",
 ]
+
 
 def migrate():
     abs_csv = os.path.abspath(CSV_PATH)
@@ -57,37 +66,41 @@ def migrate():
         reader = csv.DictReader(f)
         count = 0
         for row in reader:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO logistics (
                     client_id, order_id, order_date, delivery_date, carrier,
                     origin_city, destination_city, status, sku, product_category,
                     quantity, unit_price_usd, order_value_usd, is_promo,
                     promo_discount_pct, region, warehouse
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            """, (
-                row['client_id'],
-                row['order_id'],
-                row['order_date'],
-                row['delivery_date'] if row['delivery_date'] else None,
-                row['carrier'],
-                row['origin_city'],
-                row['destination_city'],
-                row['status'],
-                row['sku'],
-                row['product_category'],
-                int(row['quantity']),
-                float(row['unit_price_usd']),
-                float(row['order_value_usd']),
-                int(row['is_promo']),
-                float(row['promo_discount_pct']),
-                row['region'],
-                row['warehouse']
-            ))
+            """,
+                (
+                    row["client_id"],
+                    row["order_id"],
+                    row["order_date"],
+                    row["delivery_date"] if row["delivery_date"] else None,
+                    row["carrier"],
+                    row["origin_city"],
+                    row["destination_city"],
+                    row["status"],
+                    row["sku"],
+                    row["product_category"],
+                    int(row["quantity"]),
+                    float(row["unit_price_usd"]),
+                    float(row["order_value_usd"]),
+                    int(row["is_promo"]),
+                    float(row["promo_discount_pct"]),
+                    row["region"],
+                    row["warehouse"],
+                ),
+            )
             count += 1
 
     conn.commit()
     conn.close()
     print(f"Successfully migrated {count} records to SQLite database.")
+
 
 if __name__ == "__main__":
     migrate()
