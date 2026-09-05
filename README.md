@@ -1,227 +1,129 @@
-<p align="center">
-  <img src="assets/logo.jpg" width="200"/>
-</p>
+# AI-Powered Logistics Analytics & Forecasting Platform
 
-English | [中文](README_zh.md) | [한국어](README_ko.md) | [日本語](README_ja.md)
+A full-stack AI-powered logistics analytics application featuring descriptive KPI dashboards, dynamic diagnostic SQL queries, predictive time-series demand forecasting, and structured explainability auditing.
 
-[![GitHub stars](https://img.shields.io/github/stars/FoundationAgents/OpenManus?style=social)](https://github.com/FoundationAgents/OpenManus/stargazers)
-&ensp;
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) &ensp;
-[![Discord Follow](https://dcbadge.vercel.app/api/server/DYn29wFk9z?style=flat)](https://discord.gg/DYn29wFk9z)
-[![Demo](https://img.shields.io/badge/Demo-Hugging%20Face-yellow)](https://huggingface.co/spaces/lyh-917/OpenManusDemo)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15186407.svg)](https://doi.org/10.5281/zenodo.15186407)
+---
 
-# 👋 OpenManus
+## 🌟 Overview & Key Features
 
-Manus is incredible, but OpenManus can achieve any idea without an *Invite Code* 🛫!
+1. **Descriptive Operational Analytics Dashboard**:
+   - Live KPI cards: Total Orders, Delivered Orders, Delayed Orders, On-Time Delivery Rate (%), Average Delivery Time (days), Total Revenue ($).
+   - Interactive visualizations: Monthly Order Volume & Delivery Performance trend lines, Carrier Delay Rate & Volume breakdowns.
 
-Our team members [@Xinbing Liang](https://github.com/mannaandpoem) and [@Jinyu Xiang](https://github.com/XiangJinyu) (core authors), along with [@Zhaoyang Yu](https://github.com/MoshiQAQ), [@Jiayi Zhang](https://github.com/didiforgithub), and [@Sirui Hong](https://github.com/stellaHSR), we are from [@MetaGPT](https://github.com/geekan/MetaGPT). The prototype is launched within 3 hours and we are keeping building!
+2. **AI-Orchestrated Natural Language Interface**:
+   - Query logistics data conversationally (e.g., *"Which carrier has the highest delay rate?"*, *"Show delayed orders by week for the last 3 months"*).
+   - Automated tool routing: Determines whether to execute structured SQL analytics or predictive demand forecasting.
+   - Dynamic Chart Rendering: Automatically selects appropriate visual charts (Bar, Line, Pie) based on response data.
 
-It's a simple implementation, so we welcome any suggestions, contributions, and feedback!
+3. **Predictive & Prescriptive Demand Forecasting Tool**:
+   - Forecasting algorithms: Single Exponential Smoothing, Simple Moving Average, Linear Regression.
+   - Predicts future monthly demand for specific SKUs or product categories.
+   - Generates inventory stock targets and 20% safety stock procurement recommendations.
 
-Enjoy your own agent with OpenManus!
+4. **Explainability & Computation Audit**:
+   - Transparent metadata detailing applied filters, metrics & dimensions, query execution plan/SQL executed, and interactive underlying data table preview.
 
-We're also excited to introduce [OpenManus-RL](https://github.com/OpenManus/OpenManus-RL), an open-source project dedicated to reinforcement learning (RL)- based (such as GRPO) tuning methods for LLM agents, developed collaboratively by researchers from UIUC and OpenManus.
+---
 
-## Project Demo
+## 🛠️ Data Migration
 
-<video src="https://private-user-images.githubusercontent.com/61239030/420168772-6dcfd0d2-9142-45d9-b74e-d10aa75073c6.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDEzMTgwNTksIm5iZiI6MTc0MTMxNzc1OSwicGF0aCI6Ii82MTIzOTAzMC80MjAxNjg3NzItNmRjZmQwZDItOTE0Mi00NWQ5LWI3NGUtZDEwYWE3NTA3M2M2Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzA3VDAzMjIzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdiZjFkNjlmYWNjMmEzOTliM2Y3M2VlYjgyNDRlZDJmOWE3NWZhZjE1MzhiZWY4YmQ3NjdkNTYwYTU5ZDA2MzYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.UuHQCgWYkh0OQq9qsUWqGsUbhG3i9jcZDAMeHjLt5T4" data-canonical-src="https://private-user-images.githubusercontent.com/61239030/420168772-6dcfd0d2-9142-45d9-b74e-d10aa75073c6.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDEzMTgwNTksIm5iZiI6MTc0MTMxNzc1OSwicGF0aCI6Ii82MTIzOTAzMC80MjAxNjg3NzItNmRjZmQwZDItOTE0Mi00NWQ5LWI3NGUtZDEwYWE3NTA3M2M2Lm1wND9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTAzMDclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwMzA3VDAzMjIzOVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTdiZjFkNjlmYWNjMmEzOTliM2Y3M2VlYjgyNDRlZDJmOWE3NWZhZjE1MzhiZWY4YmQ3NjdkNTYwYTU5ZDA2MzYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.UuHQCgWYkh0OQq9qsUWqGsUbhG3i9jcZDAMeHjLt5T4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px"></video>
+Data from `examples/use_case/logistic_data/mock_logistics_data.csv` is migrated into a relational SQLite database (`logistics.db`).
 
-## Installation
+### Schema
+- `client_id` (TEXT)
+- `order_id` (TEXT, PRIMARY KEY)
+- `order_date` (TEXT)
+- `delivery_date` (TEXT)
+- `carrier` (TEXT)
+- `origin_city` (TEXT)
+- `destination_city` (TEXT)
+- `status` (TEXT)
+- `sku` (TEXT)
+- `product_category` (TEXT)
+- `quantity` (INTEGER)
+- `unit_price_usd` (REAL)
+- `order_value_usd` (REAL)
+- `is_promo` (INTEGER)
+- `promo_discount_pct` (REAL)
+- `region` (TEXT)
+- `warehouse` (TEXT)
 
-We provide two installation methods. Method 2 (using uv) is recommended for faster installation and better dependency management.
+---
 
-### Method 1: Using conda
+## 🚀 Quick Start & Local Setup Instructions
 
-1. Create a new conda environment:
+### Prerequisites
+- Python 3.12+
+- Node.js 18+ & npm
 
+### 1. Database Ingestion
+Run the migration script to generate and populate `logistics.db`:
 ```bash
-conda create -n open_manus python=3.12
-conda activate open_manus
+python scripts/migrate_to_sqlite.py
 ```
 
-2. Clone the repository:
-
-```bash
-git clone https://github.com/FoundationAgents/OpenManus.git
-cd OpenManus
-```
-
-3. Install dependencies:
-
+### 2. Backend API Setup
+Install dependencies and run the FastAPI server:
 ```bash
 pip install -r requirements.txt
+PYTHONPATH=. uvicorn backend.main:app --host 0.0.0.0 --port 8000
 ```
+Backend API interactive docs will be available at: `http://localhost:8000/docs`
 
-### Method 2: Using uv (Recommended)
-
-1. Install uv (A fast Python package installer and resolver):
-
+### 3. Frontend Dashboard Setup
+In a new terminal window:
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+cd frontend
+npm install
+npm run dev -- --port 3000
+```
+Access the application dashboard at: `http://localhost:3000`
+
+---
+
+## 🏗️ System Architecture & AI Orchestration Flow
+
+### Flow Architecture
+```
+User Question
+    │
+    ▼
+AI Orchestrator (backend/ai_orchestrator.py)
+    │
+    ├────────────► Query Tool (backend/query_tool.py) ──► SQLite (logistics.db)
+    │
+    └────────────► Forecasting Tool (backend/forecasting_tool.py) ──► Time Series Model
+    │
+    ▼
+Structured Result + Explainability Audit + Dynamic Chart
 ```
 
-2. Clone the repository:
+### Security & SQL Safety
+- Direct execution of arbitrary raw user SQL is strictly prevented.
+- Queries are validated against forbidden DDL/DML keywords (`DROP`, `DELETE`, `INSERT`, `UPDATE`, `ALTER`).
+- All data queries use parameterized or verified read-only SQL clauses.
 
+---
+
+## 🧪 Testing & Verification
+
+Run the full Python backend test suite:
 ```bash
-git clone https://github.com/FoundationAgents/OpenManus.git
-cd OpenManus
+python -m pytest tests/test_api.py tests/test_tools.py
 ```
 
-3. Create a new virtual environment and activate it:
+---
 
-```bash
-uv venv --python 3.12
-source .venv/bin/activate  # On Unix/macOS
-# Or on Windows:
-# .venv\Scripts\activate
-```
+## 📌 Assumptions, Simplifications & Limitations
 
-4. Install dependencies:
+1. **Dataset Scope**: The dataset operates on 400 fixed logistics order records covering 2025-2026.
+2. **Read-Only Operation**: Operations treat all order records as read-only.
+3. **Forecasting Model**: Employs Single Exponential Smoothing (alpha=0.4) and 3-month Moving Average for stable, interpretable time-series demand estimation without requiring external ML dependencies.
 
-```bash
-uv pip install -r requirements.txt
-```
+---
 
-### Browser automation
+## 🔮 Future Improvements
 
-OpenManus starts Browser Use CLI 3.0 as a default MCP server:
-
-```bash
-uvx browser-use --cli-mcp
-```
-
-`uvx` keeps Browser Use and its fast-moving dependencies isolated from the
-OpenManus environment. The agent receives the canonical Browser Use skill and
-the native `browser_exec` and `browser_screenshot` tools.
-
-Local mode attaches to Chrome or Chromium automatically and needs no API key.
-For diagnostics or to install Chromium, run:
-
-```bash
-uvx browser-use --doctor
-uvx browser-use install
-```
-
-For an isolated Browser Use Cloud browser, authenticate before starting
-OpenManus. The agent can then start and select a named remote browser:
-
-```bash
-export BROWSER_USE_API_KEY="bu_..."
-```
-
-Existing browsers can be selected with `BU_CDP_URL`, `BU_CDP_WS`, or `BU_NAME`.
-Set `OPENMANUS_DISABLE_BROWSER_USE=1` to disable the default Browser Use MCP
-server.
-
-BrowserGym still requires its Playwright browser:
-
-```bash
-playwright install
-```
-
-## Configuration
-
-OpenManus requires configuration for the LLM APIs it uses. Follow these steps to set up your configuration:
-
-1. Create a `config.toml` file in the `config` directory (you can copy from the example):
-
-```bash
-cp config/config.example.toml config/config.toml
-```
-
-2. Edit `config/config.toml` to add your API keys and customize settings:
-
-```toml
-# Global LLM configuration
-[llm]
-model = "gpt-4o"
-base_url = "https://api.openai.com/v1"
-api_key = "sk-..."  # Replace with your actual API key
-max_tokens = 4096
-temperature = 0.0
-
-# Optional configuration for specific LLM models
-[llm.vision]
-model = "gpt-4o"
-base_url = "https://api.openai.com/v1"
-api_key = "sk-..."  # Replace with your actual API key
-```
-
-## Quick Start
-
-One line for run OpenManus:
-
-```bash
-python main.py
-```
-
-Then input your idea via terminal!
-
-For MCP tool version, you can run:
-```bash
-python run_mcp.py
-```
-
-For unstable multi-agent version, you also can run:
-
-```bash
-python run_flow.py
-```
-
-### Custom Adding Multiple Agents
-
-Currently, besides the general OpenManus Agent, we have also integrated the DataAnalysis Agent, which is suitable for data analysis and data visualization tasks. You can add this agent to `run_flow` in `config.toml`.
-
-```toml
-# Optional configuration for run-flow
-[runflow]
-use_data_analysis_agent = true     # Disabled by default, change to true to activate
-```
-In addition, you need to install the relevant dependencies to ensure the agent runs properly: [Detailed Installation Guide](app/tool/chart_visualization/README.md##Installation)
-
-## How to contribute
-
-We welcome any friendly suggestions and helpful contributions! Just create issues or submit pull requests.
-
-Or contact @mannaandpoem via 📧email: mannaandpoem@gmail.com
-
-**Note**: Before submitting a pull request, please use the pre-commit tool to check your changes. Run `pre-commit run --all-files` to execute the checks.
-
-## Community Group
-Join our networking group on Feishu and share your experience with other developers!
-
-<div align="center" style="display: flex; gap: 20px;">
-    <img src="assets/community_group.jpg" alt="OpenManus 交流群" width="300" />
-</div>
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=FoundationAgents/OpenManus&type=Date)](https://star-history.com/#FoundationAgents/OpenManus&Date)
-
-## Sponsors
-Thanks to [PPIO](https://ppinfra.com/user/register?invited_by=OCPKCN&utm_source=github_openmanus&utm_medium=github_readme&utm_campaign=link) for computing source support.
-> PPIO: The most affordable and easily-integrated MaaS and GPU cloud solution.
-
-
-## Acknowledgement
-
-Thanks to [anthropic-computer-use](https://github.com/anthropics/anthropic-quickstarts/tree/main/computer-use-demo), [browser-use](https://github.com/browser-use/browser-use) and [crawl4ai](https://github.com/unclecode/crawl4ai) for providing basic support for this project!
-
-Additionally, we are grateful to [AAAJ](https://github.com/metauto-ai/agent-as-a-judge), [MetaGPT](https://github.com/geekan/MetaGPT), [OpenHands](https://github.com/All-Hands-AI/OpenHands) and [SWE-agent](https://github.com/SWE-agent/SWE-agent).
-
-We also thank stepfun(阶跃星辰) for supporting our Hugging Face demo space.
-
-OpenManus is built by contributors from MetaGPT. Huge thanks to this agent community!
-
-## Cite
-```bibtex
-@misc{openmanus2025,
-  author = {Xinbing Liang and Jinyu Xiang and Zhaoyang Yu and Jiayi Zhang and Sirui Hong and Sheng Fan and Xiao Tang and Bang Liu and Yuyu Luo and Chenglin Wu},
-  title = {OpenManus: An open-source framework for building general AI agents},
-  year = {2025},
-  publisher = {Zenodo},
-  doi = {10.5281/zenodo.15186407},
-  url = {https://doi.org/10.5281/zenodo.15186407},
-}
-```
+1. **Advanced ML Forecasting**: Integrate Prophet or ARIMA models for seasonal decomposition.
+2. **LLM Function Calling**: Upgrade AI orchestrator to use OpenAI / Anthropic tool use APIs for multi-step reasoning.
+3. **Real-time Streaming**: Implement WebSockets for live order status updates and alert notifications.
