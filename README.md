@@ -25,38 +25,38 @@ A full-stack AI-powered logistics analytics application featuring descriptive KP
 
 ---
 
-## 🛠️ Data Migration
+## 🛠️ Data Handling & Database Schema
 
-Data from `examples/use_case/logistic_data/mock_logistics_data.csv` is migrated into a relational SQLite database (`logistics.db`).
+The platform uses a unified dataset (`mock_logistics_data.csv` - 400 order records) synced with a relational database (supports **Supabase PostgreSQL** and **SQLite**).
 
-### Schema
-- `client_id` (TEXT)
-- `order_id` (TEXT, PRIMARY KEY)
-- `order_date` (TEXT)
-- `delivery_date` (TEXT)
-- `carrier` (TEXT)
-- `origin_city` (TEXT)
-- `destination_city` (TEXT)
-- `status` (TEXT)
-- `sku` (TEXT)
-- `product_category` (TEXT)
+### Schema (`logistics` table)
+- `client_id` (TEXT / VARCHAR)
+- `order_id` (TEXT / VARCHAR, PRIMARY KEY)
+- `order_date` (DATE)
+- `delivery_date` (DATE)
+- `carrier` (VARCHAR)
+- `origin_city` (VARCHAR)
+- `destination_city` (VARCHAR)
+- `status` (VARCHAR)
+- `sku` (VARCHAR)
+- `product_category` (VARCHAR)
 - `quantity` (INTEGER)
-- `unit_price_usd` (REAL)
-- `order_value_usd` (REAL)
+- `unit_price_usd` (NUMERIC)
+- `order_value_usd` (NUMERIC)
 - `is_promo` (INTEGER)
-- `promo_discount_pct` (REAL)
-- `region` (TEXT)
-- `warehouse` (TEXT)
+- `promo_discount_pct` (NUMERIC)
+- `region` (VARCHAR)
+- `warehouse` (VARCHAR)
 
 ---
 
-## 🚀 Quick Start & Local Setup Instructions
+## 🚀 Local Quick Start Setup
 
 ### Prerequisites
 - Python 3.12+
 - Node.js 18+ & npm
 
-### 1. Database Ingestion
+### 1. Database Ingestion (SQLite Local)
 Run the migration script to generate and populate `logistics.db`:
 ```bash
 python scripts/migrate_to_sqlite.py
@@ -81,6 +81,57 @@ Access the application dashboard at: `http://localhost:3000`
 
 ---
 
+## ☁️ Tutorial: Deployment to Supabase PostgreSQL & Vercel
+
+Follow these step-by-step instructions to deploy the production dataset to **Supabase PostgreSQL** and host the frontend on **Vercel**.
+
+### Step 1: Supabase PostgreSQL Setup & Data Migration
+
+1. **Create Supabase Project**:
+   - Log in to [Supabase](https://supabase.com) and create a new project.
+2. **Obtain Connection String**:
+   - Go to **Project Settings** -> **Database**.
+   - Copy the **URI Connection String** under *Connection string* (Transaction/Session Pooler or Direct connection).
+   - Format: `postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres`
+3. **Execute Migration Script**:
+   - Set the `DATABASE_URL` environment variable and run the migration script:
+   ```bash
+   export DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres"
+   python scripts/migrate_to_postgres.py
+   ```
+   - The script automatically creates the `logistics` table, builds indexes, and inserts all 400 records.
+
+---
+
+### Step 2: Backend API Deployment (Render / AWS / Railway / Vercel Serverless)
+
+1. Deploy the Python FastAPI backend to your cloud host (e.g. Render, Railway, or AWS EC2).
+2. Configure the Cloud Environment Variable:
+   - `DATABASE_URL`: Your Supabase connection string.
+3. Verify backend health endpoint once deployed: `https://your-backend-api.onrender.com/api/health`
+
+---
+
+### Step 3: Vercel Frontend Deployment
+
+1. **Push Code to GitHub**:
+   - Commit and push your code to your GitHub repository.
+2. **Deploy on Vercel**:
+   - Log in to [Vercel](https://vercel.com) and click **Add New** -> **Project**.
+   - Select your GitHub repository.
+   - Set **Root Directory** to `frontend`.
+   - Build Settings:
+     - Framework Preset: **Vite**
+     - Build Command: `npm run build`
+     - Output Directory: `dist`
+3. **Configure Environment Variables in Vercel**:
+   - Under **Environment Variables**, add:
+     - `VITE_API_BASE_URL`: `https://your-backend-api.onrender.com` (Your deployed backend API URL)
+4. **Deploy**:
+   - Click **Deploy**. Vercel will build and assign a publicly accessible HTTPS URL (e.g., `https://logistics-analytics.vercel.app`).
+
+---
+
 ## 🏗️ System Architecture & AI Orchestration Flow
 
 ### Flow Architecture
@@ -90,7 +141,7 @@ User Question
     ▼
 AI Orchestrator (backend/ai_orchestrator.py)
     │
-    ├────────────► Query Tool (backend/query_tool.py) ──► SQLite (logistics.db)
+    ├────────────► Query Tool (backend/query_tool.py) ──► PostgreSQL / SQLite
     │
     └────────────► Forecasting Tool (backend/forecasting_tool.py) ──► Time Series Model
     │
@@ -116,9 +167,9 @@ python -m pytest tests/test_api.py tests/test_tools.py
 
 ## 📌 Assumptions, Simplifications & Limitations
 
-1. **Dataset Scope**: The dataset operates on 400 fixed logistics order records covering 2025-2026.
-2. **Read-Only Operation**: Operations treat all order records as read-only.
-3. **Forecasting Model**: Employs Single Exponential Smoothing (alpha=0.4) and 3-month Moving Average for stable, interpretable time-series demand estimation without requiring external ML dependencies.
+1. **Dataset Scope**: Operates on 400 fixed logistics order records covering 2025-2026.
+2. **Read-Only Operation**: All database operations treat records as read-only.
+3. **Forecasting Model**: Employs Single Exponential Smoothing (alpha=0.4) and 3-month Moving Average for stable, interpretable time-series demand estimation.
 
 ---
 

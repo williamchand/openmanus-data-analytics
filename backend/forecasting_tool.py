@@ -1,21 +1,18 @@
-import os
-import sqlite3
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-
-DB_PATH = os.path.join(os.path.dirname(__file__), "..", "logistics.db")
+from backend.db import IS_POSTGRES, execute_query, get_placeholder
 
 
 class ForecastingTool:
     """
     Forecasting tool for predicting future logistics demand based on historical data.
     Supports Moving Average, Linear Regression, and Exponential Smoothing methods.
-    Returns forecast values, visualization structure, inventory recommendations, and methodology explanations.
+    Supports both SQLite and PostgreSQL (Supabase).
     """
 
-    def __init__(self, db_path: str = DB_PATH):
-        self.db_path = db_path
+    def __init__(self):
+        pass
 
     def predict_demand(
         self,
@@ -24,26 +21,27 @@ class ForecastingTool:
         months_ahead: int = 4,
         method: str = "exponential_smoothing",
     ) -> Dict[str, Any]:
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-
         where_clauses = []
         params = []
+        placeholder = get_placeholder()
 
         if sku:
-            where_clauses.append("LOWER(sku) = LOWER(?)")
+            where_clauses.append(f"LOWER(sku) = LOWER({placeholder})")
             params.append(sku)
         if product_category:
-            where_clauses.append("LOWER(product_category) = LOWER(?)")
+            where_clauses.append(f"LOWER(product_category) = LOWER({placeholder})")
             params.append(product_category)
 
         where_sql = ("WHERE " + " AND ".join(where_clauses)) if where_clauses else ""
 
-        # Aggregate historical monthly demand
+        if IS_POSTGRES:
+            month_expr = "to_char(order_date::date, 'YYYY-MM')"
+        else:
+            month_expr = "strftime('%Y-%m', order_date)"
+
         sql = f"""
         SELECT
-            strftime('%Y-%m', order_date) as month,
+            {month_expr} as month,
             SUM(quantity) as total_quantity,
             COUNT(*) as total_orders,
             SUM(order_value_usd) as total_revenue
@@ -53,9 +51,7 @@ class ForecastingTool:
         ORDER BY month ASC;
         """
 
-        cursor.execute(sql, params)
-        rows = cursor.fetchall()
-        conn.close()
+        rows = execute_query(sql, tuple(params))
 
         if not rows:
             return {
@@ -67,21 +63,19 @@ class ForecastingTool:
             }
 
         historical_months = [r["month"] for r in rows]
-        historical_quantities = [r["total_quantity"] for r in rows]
+        historical_quantities = [float(r["total_quantity"]) for r in rows]
 
         historical_series = [
             {"month": m, "quantity": q, "type": "historical"}
             for m, q in zip(historical_months, historical_quantities)
         ]
 
-        # Determine last month and generate future month labels
         last_month_str = historical_months[-1]
         last_dt = datetime.strptime(last_month_str + "-01", "%Y-%m-%d")
 
         future_months = []
         curr_dt = last_dt
         for _ in range(months_ahead):
-            # Advance one month
             year = curr_dt.year + (curr_dt.month // 12)
             month = (curr_dt.month % 12) + 1
             curr_dt = datetime(year, month, 1)
@@ -90,17 +84,14 @@ class ForecastingTool:
         forecast_quantities = []
         methodology_desc = ""
 
-        # Apply chosen forecasting method
         n = len(historical_quantities)
         if method == "moving_average" or n < 3:
-            # 3-Month Simple Moving Average
             window = min(3, n)
             avg_val = sum(historical_quantities[-window:]) / window
             forecast_quantities = [round(avg_val, 1)] * months_ahead
             methodology_desc = f"Simple Moving Average ({window}-month window) calculated from recent historical trend."
 
         elif method == "linear_regression":
-            # Simple Linear Regression: y = a + bx
             x = list(range(n))
             y = historical_quantities
             x_mean = sum(x) / n
@@ -116,13 +107,12 @@ class ForecastingTool:
                 forecast_quantities.append(round(max(0, pred), 1))
             methodology_desc = f"Linear Regression (Ordinary Least Squares) capturing linear growth/decline trend (slope: {b:.2f})."
 
-        else:  # Exponential Smoothing
+        else:
             alpha = 0.4
             s = historical_quantities[0]
             for val in historical_quantities[1:]:
                 s = alpha * val + (1 - alpha) * s
 
-            # Project flat or slightly dampened level based on last smooth
             forecast_quantities = [round(s, 1)] * months_ahead
             methodology_desc = f"Single Exponential Smoothing (alpha={alpha}) dampening high-frequency variance and giving higher weight to recent demand."
 
@@ -131,10 +121,9 @@ class ForecastingTool:
             for m, q in zip(future_months, forecast_quantities)
         ]
 
-        # Calculate Inventory Recommendation
         total_predicted = sum(forecast_quantities)
         avg_monthly_pred = total_predicted / months_ahead if months_ahead > 0 else 0
-        safety_stock = round(avg_monthly_pred * 0.20, 1)  # 20% buffer
+        safety_stock = round(avg_monthly_pred * 0.20, 1)
         recommended_inventory = round(total_predicted + safety_stock, 1)
 
         target_name = (

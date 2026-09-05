@@ -5,6 +5,8 @@ import DashboardCharts from './components/DashboardCharts';
 import DynamicChart from './components/DynamicChart';
 import ExplainabilityPanel from './components/ExplainabilityPanel';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 const SAMPLE_QUESTIONS = [
   "Which carrier has the highest delay rate?",
   "Show delayed orders by week for the last 3 months",
@@ -29,9 +31,9 @@ export default function App() {
     setLoadingDashboard(true);
     try {
       const [kpiRes, volRes, carrierRes] = await Promise.all([
-        fetch('/api/kpis'),
-        fetch('/api/charts/order-volume'),
-        fetch('/api/charts/carrier-breakdown')
+        fetch(`${API_BASE_URL}/api/kpis`),
+        fetch(`${API_BASE_URL}/api/charts/order-volume`),
+        fetch(`${API_BASE_URL}/api/charts/carrier-breakdown`)
       ]);
 
       const kpiData = await kpiRes.json();
@@ -61,7 +63,7 @@ export default function App() {
     setAiError(null);
 
     try {
-      const res = await fetch('/api/ask-ai', {
+      const res = await fetch(`${API_BASE_URL}/api/ask-ai`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: q })
@@ -112,7 +114,7 @@ export default function App() {
               <BarChart3 className="w-5 h-5 text-blue-600" />
               Operational Performance Dashboard
             </h2>
-            <span className="text-xs text-slate-500 font-medium">Data source: SQLite Database (400 synced records)</span>
+            <span className="text-xs text-slate-500 font-medium">Data source: Logistics DB (400 synced records)</span>
           </div>
 
           <KPICards kpis={kpis} />
