@@ -32,6 +32,7 @@ setup(
         "uv>=0.6.0",
         "googlesearch-python~=1.3.0",
         "aiofiles~=24.1.0",
+        "psycopg2-binary~=2.9.10",
         "colorama~=0.4.6",
     ],
     classifiers=[
