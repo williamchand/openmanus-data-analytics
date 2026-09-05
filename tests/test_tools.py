@@ -54,7 +54,6 @@ def test_forecasting_tool_sku(setup_db):
 
 
 def test_postgres_query_transformations(monkeypatch, setup_db):
-    from unittest.mock import MagicMock
     import backend.db as db_module
 
     executed_queries = []
@@ -62,16 +61,20 @@ def test_postgres_query_transformations(monkeypatch, setup_db):
     class DummyCursor:
         def __enter__(self):
             return self
+
         def __exit__(self, exc_type, exc_val, exc_tb):
             pass
+
         def execute(self, query, params=()):
             executed_queries.append((query, params))
+
         def fetchall(self):
             return [{"cnt": 1}]
 
     class DummyConn:
         def cursor(self, cursor_factory=None):
             return DummyCursor()
+
         def close(self):
             pass
 

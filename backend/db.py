@@ -44,7 +44,9 @@ def execute_query(query: str, params: Tuple[Any, ...] = ()) -> List[Dict[str, An
                 "julianday(delivery_date) - julianday(order_date)",
                 "EXTRACT(DAY FROM (delivery_date::timestamp - order_date::timestamp))",
             )
-            pg_query = pg_query.replace("delivery_date != ''", "delivery_date::text != ''")
+            pg_query = pg_query.replace(
+                "delivery_date != ''", "delivery_date::text != ''"
+            )
             pg_query = pg_query.replace("AS FLOAT", "AS NUMERIC")
 
             with conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cur:
